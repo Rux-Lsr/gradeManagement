@@ -52,9 +52,3 @@
   - `CC`
   - `SN`
   - `Rattrapage`
-
-**Remarques :**
-
-- Les noms des collections (par exemple, `modules`, `enseignants`, `evaluations`) sont donnés à titre d'exemple et peuvent être adaptés pour être plus descriptifs.
-- Le choix du type de collection (List, Set, etc.) dépend des exigences spécifiques (ordre, unicité, etc.). `List` est souvent un bon choix par défaut.
-- Cette représentation littérale est une base pour la traduction en code, et des ajustements peuvent être nécessaires en fonction des choix de conception et des contraintes du langage de programmation utilisé.
