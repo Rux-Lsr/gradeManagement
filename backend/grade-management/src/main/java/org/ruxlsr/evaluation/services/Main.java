@@ -1,8 +1,7 @@
-package org.ruxlsr.evaluation.controller;
+package org.ruxlsr.evaluation.services;
 
-import org.ruxlsr.evaluation.interfaces.Evaluationsinterface;
-import org.ruxlsr.evaluation.controller.Evaluationcontroller;
 import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.services.impl.EvaluationServiceImpl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -13,7 +12,7 @@ import java.util.Scanner;
 public class Main {
 
     public static void main(String[] args) {
-        Evaluationcontroller evaluatiocontroller = new Evaluationcontroller();
+        EvaluationServiceImpl evaluatiocontroller = new EvaluationServiceImpl();
         Scanner scanner = new Scanner(System.in);
         int choix;
 

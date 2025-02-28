@@ -1,16 +1,16 @@
-package org.ruxlsr.evaluation.controller;
+package org.ruxlsr.evaluation.services.impl;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import org.ruxlsr.evaluation.interfaces.Evaluationsinterface;
 import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.services.IEvaluationService;
 
-public class Evaluationcontroller implements Evaluationsinterface{
+public class EvaluationServiceImpl implements IEvaluationService{
     
 
-    public Evaluationcontroller(){};
+    public EvaluationServiceImpl(){};
 
     
     @Override
