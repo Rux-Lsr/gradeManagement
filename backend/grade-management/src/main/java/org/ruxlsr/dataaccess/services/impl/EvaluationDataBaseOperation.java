@@ -27,7 +27,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
             stmt.setTimestamp(2, evaluation.date());
             stmt.setFloat(3, evaluation.coef());
             stmt.setFloat(4, evaluation.max());
-            stmt.setString(5, evaluation.typeEvaluation().name());
+            stmt.setString(5, evaluation.evaluationType().name());
 
             return stmt.executeUpdate();
         } catch (Exception e) {
@@ -74,7 +74,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
             stmt.setTimestamp(2, evaluation.date());
             stmt.setFloat(3, evaluation.coef());
             stmt.setFloat(4, evaluation.max());
-            stmt.setString(5, evaluation.typeEvaluation().name());
+            stmt.setString(5, evaluation.evaluationType().name());
             stmt.setInt(6, evaluation.id());
 
             return stmt.executeUpdate();
