@@ -1,7 +1,7 @@
 package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.util.DatabaseConnection;
+import org.ruxlsr.dataaccess.util.MysqlDbConnection;
 import org.ruxlsr.module.model.Module;
 
 import java.sql.Connection;
@@ -19,7 +19,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
     public int createEntities(Module module) {
         String sql = "INSERT INTO Modules (nom, description, credit) VALUES (?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, module.nom());
@@ -38,7 +38,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
         Set<Module> modules = new HashSet<>();
         String sql = "SELECT * FROM Modules";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet result = stmt.executeQuery()) {
 
@@ -62,7 +62,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
     public int update(Module module) {
         String sql = "UPDATE Modules SET nom = ?, description = ?, credit = ? WHERE id = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, module.nom());
@@ -81,7 +81,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
     public int delete(Module module) {
         String sql = "DELETE FROM Modules WHERE id = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1,  module.id());

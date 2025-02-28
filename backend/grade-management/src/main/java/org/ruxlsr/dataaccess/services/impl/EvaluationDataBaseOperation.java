@@ -1,7 +1,7 @@
 package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.util.DatabaseConnection;
+import org.ruxlsr.dataaccess.util.MysqlDbConnection;
 import org.ruxlsr.evaluation.model.Evaluation;
 import org.ruxlsr.evaluation.model.EvaluationType;
 
@@ -20,7 +20,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
     public int createEntities(Evaluation evaluation) {
         String sql = "INSERT INTO Evaluation (moduleId, date, coef, max, typeEvaluation) VALUES (?, ?, ?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, evaluation.moduleId());
@@ -41,7 +41,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
         Set<Evaluation> evaluations = new HashSet<>();
         String sql = "SELECT * FROM Evaluation";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet result = stmt.executeQuery()) {
 
@@ -67,7 +67,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
     public int update(Evaluation evaluation) {
         String sql = "UPDATE Evaluation SET moduleId = ?, date = ?, coef = ?, max = ?, typeEvaluation = ? WHERE id = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, evaluation.moduleId());
@@ -88,7 +88,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
     public int delete(Evaluation evaluation) {
         String sql = "DELETE FROM Evaluation WHERE id = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, evaluation.id());

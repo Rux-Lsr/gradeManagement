@@ -1,7 +1,7 @@
 package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.util.DatabaseConnection;
+import org.ruxlsr.dataaccess.util.MysqlDbConnection;
 import org.ruxlsr.etudiant.model.Etudiant;
 
 import java.sql.Connection;
@@ -18,7 +18,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
     @Override
     public int createEntities(Etudiant etudiant) {
         String sql = "INSERT INTO Etudiant ( nom, prenom, matricule) values ( ?, ?, ?);";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);){
             stmt.setString(1, etudiant.nom());
             stmt.setString(2, etudiant.prenom());
@@ -35,7 +35,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
     public Set<Etudiant> getRecords() {
         Set<Etudiant> etudiants = new HashSet<>();
         String sql = "SELECT * FROM Etudiant;";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet result = stmt.executeQuery();){
 
@@ -60,7 +60,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
     @Override
     public int update(Etudiant etudiant) {
         String sql = "UPDATE Etudiant SET nom = ?, prenom = ?, matricule = ? WHERE id = ? ";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
         ){
             stmt.setString(1, etudiant.nom());
@@ -78,7 +78,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
     @Override
     public int delete(Etudiant etudiant) {
         String sql = "DELETE FROM Etudiant where id=? ";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
         ){
             stmt.setInt(1, etudiant.id());

@@ -1,7 +1,7 @@
 package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.util.DatabaseConnection;
+import org.ruxlsr.dataaccess.util.MysqlDbConnection;
 import org.ruxlsr.evaluation.model.Note;
 
 import java.sql.Connection;
@@ -19,7 +19,7 @@ public class NoteDataBaseOperation implements DataBaseOperation<Note> {
     public int createEntities(Note note) {
         String sql = "INSERT INTO Note (evaluationId, etudiantId, note) VALUES (?, ?, ?)";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, note.evaluationId());
@@ -38,7 +38,7 @@ public class NoteDataBaseOperation implements DataBaseOperation<Note> {
         Set<Note> notes = new HashSet<>();
         String sql = "SELECT * FROM Note";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
              ResultSet result = stmt.executeQuery()) {
 
@@ -61,7 +61,7 @@ public class NoteDataBaseOperation implements DataBaseOperation<Note> {
     public int update(Note note) {
         String sql = "UPDATE Note SET note = ? WHERE evaluationId = ? AND etudiantId = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setFloat(1, note.note());
@@ -79,7 +79,7 @@ public class NoteDataBaseOperation implements DataBaseOperation<Note> {
     public int delete(Note note) {
         String sql = "DELETE FROM Note WHERE evaluationId = ? AND etudiantId = ?";
 
-        try (Connection con = DatabaseConnection.getInstance().getConnection();
+        try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setInt(1, note.evaluationId());

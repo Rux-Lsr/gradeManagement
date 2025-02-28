@@ -1,7 +1,7 @@
 package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.util.DatabaseConnection;
+import org.ruxlsr.dataaccess.util.MysqlDbConnection;
 import org.ruxlsr.enseignant.model.Enseignant;
 
 import java.sql.Connection;
@@ -17,7 +17,7 @@ public class EnseignantDataBaseOperation implements DataBaseOperation<Enseignant
     @Override
     public int createEntities(Enseignant enseignant) {
         String sql = "INSERT INTO Enseignant ( nom, prenom, password) values ( ?, ?, ?);";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);){
             stmt.setString(1, enseignant.nom());
             stmt.setString(2, enseignant.prenom());
@@ -34,7 +34,7 @@ public class EnseignantDataBaseOperation implements DataBaseOperation<Enseignant
     public Set<Enseignant> getRecords() {
         Set<Enseignant> enseignants = new HashSet<>();
         String sql = "SELECT * FROM Enseignant;";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
             ResultSet result = stmt.executeQuery();){
 
@@ -59,7 +59,7 @@ public class EnseignantDataBaseOperation implements DataBaseOperation<Enseignant
     @Override
     public int update(Enseignant enseignant) {
         String sql = "UPDATE Enseignant SET nom = ?, prenom = ?, password = ? WHERE id = ? ";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
             ){
             stmt.setString(1, enseignant.nom());
@@ -77,7 +77,7 @@ public class EnseignantDataBaseOperation implements DataBaseOperation<Enseignant
     @Override
     public int delete(Enseignant enseignant) {
         String sql = "DELETE FROM Enseignant where id=? ";
-        try(Connection con = DatabaseConnection.getInstance().getConnection();
+        try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);
         ){
             stmt.setInt(1, enseignant.id());
