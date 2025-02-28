@@ -1,4 +1,4 @@
 package org.ruxlsr.evaluation.model;
 
-public class Note {
+public record Note(Integer evaluationId,Integer etudiantId, float note) {
 }

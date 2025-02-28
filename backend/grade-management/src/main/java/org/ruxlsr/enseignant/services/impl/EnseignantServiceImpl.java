@@ -1,5 +1,6 @@
 package org.ruxlsr.enseignant.services.impl;
 
+import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.dataaccess.services.impl.EnseignantDataBaseOperation;
 import org.ruxlsr.enseignant.model.Enseignant;
 import org.ruxlsr.enseignant.services.IEnseignantService;
@@ -8,16 +9,16 @@ import java.util.Set;
 
 public class EnseignantServiceImpl  implements IEnseignantService {
 
-    private final EnseignantDataBaseOperation<Enseignant> dbOperation;
+    private final DataBaseOperation<Enseignant> dbOperation;
 
     // Constructeur qui reçoit l'objet pour interagir avec ma base de données
-    public EnseignantServiceImpl(EnseignantDataBaseOperation<Enseignant> dbOperation) {
+    public EnseignantServiceImpl(DataBaseOperation<Enseignant> dbOperation) {
         this.dbOperation = dbOperation;
     }
 
     @Override
     public int enregistrerEnseignant(Enseignant enseignant) {
-        if (enseignant.getId() == 0) {
+        if (enseignant.id() == 0) {
             // Nouvel enseignant
             return dbOperation.createEntities(enseignant);
         } else {
