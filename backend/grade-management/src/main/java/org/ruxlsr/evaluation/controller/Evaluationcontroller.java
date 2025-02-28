@@ -27,7 +27,15 @@ public class Evaluationcontroller implements Evaluationsinterface{
     };
 
     
-        public void ModifyEvaluation(){};
-        public void SaveNote(){}
+        public void ModifyEvaluation(List<Evaluation> evaluations,int index,String date,float coef,float max,String type){
+            evaluations.set(index,CreateEvaluation(date, coef, max, type));
+        };
+
+
+
+
+        public void SaveNote(){
+            
+        };
 
 }
