@@ -44,7 +44,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
                         result.getInt("id"),
                         result.getString("nom"),
                         result.getString("prenom"),
-                        result.getString("password")
+                        result.getString("matricule")
                 );
                 etudiants.add(etudiant);
             }
