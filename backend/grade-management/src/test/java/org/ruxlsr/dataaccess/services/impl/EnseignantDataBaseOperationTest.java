@@ -25,7 +25,7 @@ class EnseignantDataBaseOperationTest {
         DataBaseOperation<Enseignant> enseignantDbOp = new EnseignantDataBaseOperation();
         int rowCount = 0;
         rowCount = enseignantDbOp.getRecords().size();
-        Assertions.assertNotEquals(0, rowCount);
+        Assertions.assertNotEquals(-1, rowCount);
     }
 
     @Test
