@@ -1,18 +1,24 @@
 package org.ruxlsr.module.model;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
+import org.ruxlsr.etudiant.model.Etudiant;
+
+import java.util.Set;
 
 public class Module {
     private int id;
+
     private String nom;
+
     private String description;
     private int credit;
-
-    public Module(int id, String nom, String description, int credit) {
+    private Set<Etudiant> listeEtudiant;
+    public Module(String nom, String description, int credit, Set<Etudiant> etudiants) {
         this.id = id;
         this.nom = nom;
         this.description = description;
         this.credit = credit;
+        this.listeEtudiant = etudiants;
 
     }
 
@@ -46,6 +52,14 @@ public class Module {
 
     public void setCredit(int credit) {
         this.credit = credit;
+    }
+
+    public Set<Etudiant> getListeEtudiant() {
+        return listeEtudiant;
+    }
+
+    public void setListeEtudiant(Set<Etudiant> listeEtudiant) {
+        this.listeEtudiant = listeEtudiant;
     }
 
 
