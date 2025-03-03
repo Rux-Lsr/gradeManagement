@@ -3,7 +3,8 @@ package org.ruxlsr.evaluation.services;
 import java.util.List;
 
 import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.services.impl.NoteServiceImpl;
 
 public interface INotesService {
-    public void SaveNote(/*Etudiant etudiant,*/Evaluation evaluation ,float note);
+    public NoteServiceImpl SaveNote(/*Etudiant etudiant,*/Evaluation evaluation ,float note);
 }
