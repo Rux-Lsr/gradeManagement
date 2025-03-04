@@ -2,13 +2,16 @@ package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.dataaccess.util.MysqlDbConnection;
+import org.ruxlsr.etudiant.model.Etudiant;
+import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.model.EvaluationType;
 import org.ruxlsr.module.model.Module;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,9 +25,9 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setString(1, module.nom());
-            stmt.setString(2, module.description());
-            stmt.setInt(3, module.credit());
+            stmt.setString(1, module.getNom());
+            stmt.setString(2, module.getDescription());
+            stmt.setInt(3, module.getCredit());
 
             return stmt.executeUpdate();
         } catch (Exception e) {
@@ -35,26 +38,76 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
 
     @Override
     public Set<Module> getRecords() {
-        Set<Module> modules = new HashSet<>();
-        String sql = "SELECT * FROM Modules";
+        Map<Integer, Module> moduleMap = new HashMap<>();
+
+        String sql = """
+                SELECT 
+                    m.id AS moduleId, m.nom AS moduleNom, m.description AS moduleDesc, m.credit AS moduleCredit,
+                    
+                    e.id AS evalId, e.date AS evalDate, e.coef AS evalCoef, e.max AS evalMax, e.typeEvaluation AS evalType,
+                    
+                    etu.id AS etudiantId, etu.nom AS etudiantNom, etu.prenom AS etudiantPrenom, etu.matricule AS etudiantMatricule
+                
+                FROM Modules m
+                LEFT JOIN Evaluation e ON m.id = e.moduleId
+                LEFT JOIN Note n ON e.id = n.evaluationId
+                LEFT JOIN Etudiant etu ON n.etudiantId = etu.id
+                """;
 
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql);
-             ResultSet result = stmt.executeQuery()) {
+             ResultSet rs = stmt.executeQuery()) {
 
-            while (result.next()) {
-                Module module = new Module(
-                        result.getInt("id"),
-                        result.getString("nom"),
-                        result.getString("description"),
-                        result.getInt("credit")
-                );
-                modules.add(module);
+            while (rs.next()) {
+                int moduleId = rs.getInt("moduleId");
+
+                // Vérifier si le module existe déjà, sinon l’ajouter
+                Module module = moduleMap.computeIfAbsent(moduleId, id -> {
+                    try {
+                        return new Module(
+                                id,
+                                rs.getString("moduleNom"),
+                                rs.getString("moduleDesc"),
+                                rs.getInt("moduleCredit"),
+                                new HashSet<>(),
+                                new HashSet<>()
+                        );
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+                // Ajouter l'évaluation si elle existe
+                if (rs.getObject("evalId") != null) {
+                    Evaluation evaluation = new Evaluation(
+                            rs.getInt("evalId"),
+                            moduleId,
+                            rs.getTimestamp("evalDate"),
+                            rs.getFloat("evalCoef"),
+                            rs.getFloat("evalMax"),
+                            EvaluationType.valueOf(rs.getString("evalType"))
+                    );
+                    module.getEvaluationSet().add(evaluation);
+                }
+
+                // Ajouter l'étudiant si il existe
+                if (rs.getObject("etudiantId") != null) {
+                    Etudiant etudiant = new Etudiant(
+                            rs.getInt("etudiantId"),
+                            rs.getString("etudiantNom"),
+                            rs.getString("etudiantPrenom"),
+                            rs.getString("etudiantMatricule")
+                    );
+                    module.getEtudiantSet().add(etudiant);
+                }
             }
-            return modules;
+
+            return new HashSet<>(moduleMap.values());
+
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Récupération des modules échouée : " + e.getLocalizedMessage(), e);
         }
+
         return Set.of();
     }
 
@@ -65,10 +118,10 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setString(1, module.nom());
-            stmt.setString(2, module.description());
-            stmt.setInt(3, module.credit());
-            stmt.setInt(4, module.id());
+            stmt.setString(1, module.getNom());
+            stmt.setString(2, module.getDescription());
+            stmt.setInt(3, module.getCredit());
+            stmt.setInt(4, module.getId());
 
             return stmt.executeUpdate();
         } catch (Exception e) {
@@ -84,7 +137,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setInt(1,  module.id());
+            stmt.setInt(1, module.getId());
             return stmt.executeUpdate();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Suppression du module échouée : " + e.getLocalizedMessage(), e);

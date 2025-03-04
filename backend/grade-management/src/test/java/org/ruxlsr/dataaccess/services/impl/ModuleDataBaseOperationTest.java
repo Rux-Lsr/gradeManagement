@@ -17,7 +17,7 @@ class ModuleDataBaseOperationTest {
     void createEntities() {
         DataBaseOperation<Module> moduleDbOp = new ModuleDataBaseOperation();
         int rowCount = 0;
-        Module newModule = new Module(0, "Mathématiques", "Cours de mathématiques avancées", 5);
+        Module newModule = new Module(0, "Mathématiques", "Cours de mathématiques avancées", 5, null, null);
         rowCount = moduleDbOp.createEntities(newModule);
 
         // Assert que la ligne a bien été ajoutée
@@ -30,7 +30,7 @@ class ModuleDataBaseOperationTest {
         DataBaseOperation<Module> moduleDbOp = new ModuleDataBaseOperation();
 
         // Ajouter un module avant de récupérer
-        Module newModule = new Module(0, "Informatique", "Cours d'introduction à l'informatique", 4);
+        Module newModule = new Module(0, "Informatique", "Cours d'introduction à l'informatique", 4, null, null);
         moduleDbOp.createEntities(newModule);
 
         Set<Module> modules = moduleDbOp.getRecords();
@@ -45,11 +45,11 @@ class ModuleDataBaseOperationTest {
         DataBaseOperation<Module> moduleDbOp = new ModuleDataBaseOperation();
 
         // Ajouter un module à modifier
-        Module newModule = new Module(2, "Physique", "Cours de physique générale", 4);
+        Module newModule = new Module(2, "Physique", "Cours de physique générale", 4, null, null);
         moduleDbOp.createEntities(newModule);
 
         // Mettre à jour le module
-        Module updatedModule = new Module(newModule.id(), "Physique avancée", "Cours de physique avancée", 6);
+        Module updatedModule = new Module(newModule.getId(), "Physique avancée", "Cours de physique avancée", 6, null, null);
         int rowCount = moduleDbOp.update(updatedModule);
 
         // Vérifier qu'une ligne a été mise à jour
@@ -62,7 +62,7 @@ class ModuleDataBaseOperationTest {
         DataBaseOperation<Module> moduleDbOp = new ModuleDataBaseOperation();
 
         // Ajouter un module à supprimer
-        Module newModule = new Module(3, "Chimie", "Cours de chimie organique", 3);
+        Module newModule = new Module(3, "Chimie", "Cours de chimie organique", 3, null, null);
         moduleDbOp.createEntities(newModule);
 
         // Supprimer le module

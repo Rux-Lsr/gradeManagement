@@ -7,9 +7,8 @@ import java.util.Set;
 
 public interface IModuleServices {
 
-    public boolean creerModule(String nom, String description, int credit, Set<Etudiant> etudiants);
-    public boolean supprimerModule(int idModule);
-    public boolean modifierInfoModule(int idModule, String nom, String description, int credit, Set<Etudiant> etudiants);
-    public Set<Etudiant> getListEtudiantModule(int idModule);
+    public boolean creerModule(String nom, String description, int credit);
+    public boolean supprimerModule(Module module);
+    public boolean modifierInfoModule(int idModule, String nom, String description, int credit);
     public Module getModule(int idModule);
 }
