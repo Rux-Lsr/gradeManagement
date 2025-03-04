@@ -1,13 +1,15 @@
 package org.ruxlsr.evaluation.services;
 
 import java.util.List;
+import java.util.Set;
 
 import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.model.Note;
 
 public interface IEvaluationService {
     
-    public Evaluation CreateEvaluation(String date,float coef,float max,String type);
-    public void DeleteEvaluation(List<Evaluation> evaluations,int choix);
-    public void ModifyEvaluation(List<Evaluation> evaluations,int index,String date,float coef,float max,String type);
-    public void SaveNote();
+    public int addEvaluation(Evaluation evaluation);
+    public int delete(Evaluation evaluation);
+    public int update(Evaluation evaluation);
+    public Set<Evaluation> getEvaluation();
 }
