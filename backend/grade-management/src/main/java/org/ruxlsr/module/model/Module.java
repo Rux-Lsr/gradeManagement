@@ -1,4 +1,4 @@
 package org.ruxlsr.module.model;
 
-public record Module(Integer id, String nom, String description, int credit) {
+pblic record Module(Integer id, String nom, String description, int credit, Set<Etudiant> listeEtudiant) {
 }
