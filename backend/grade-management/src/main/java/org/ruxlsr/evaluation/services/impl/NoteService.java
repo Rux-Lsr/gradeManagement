@@ -9,7 +9,7 @@ import java.util.Set;
 public class NoteService implements INotesService {
     DataBaseOperation<Note> noteDbOp;
 
-    NoteService(DataBaseOperation<Note> dataBaseOperation){
+    public NoteService(DataBaseOperation<Note> dataBaseOperation){
         noteDbOp = dataBaseOperation;
     }
 

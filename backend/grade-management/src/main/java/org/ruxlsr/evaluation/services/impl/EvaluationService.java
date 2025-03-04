@@ -10,7 +10,7 @@ import org.ruxlsr.evaluation.services.IEvaluationService;
 public class EvaluationService implements IEvaluationService{
     DataBaseOperation<Evaluation> evalDbOp;
 
-    EvaluationService(DataBaseOperation<Evaluation> dataBaseOperation){
+    public EvaluationService(DataBaseOperation<Evaluation> dataBaseOperation){
         evalDbOp = dataBaseOperation;
     }
 

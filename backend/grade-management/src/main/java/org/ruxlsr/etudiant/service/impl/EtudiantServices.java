@@ -8,7 +8,7 @@ import java.util.Set;
 
 public class EtudiantServices implements IEtudiantServices {
     DataBaseOperation<Etudiant> etudiantDbOp;
-    EtudiantServices(DataBaseOperation<Etudiant> etudiantDbOp){
+    public EtudiantServices(DataBaseOperation<Etudiant> etudiantDbOp){
         this.etudiantDbOp = etudiantDbOp;
     }
     @Override
