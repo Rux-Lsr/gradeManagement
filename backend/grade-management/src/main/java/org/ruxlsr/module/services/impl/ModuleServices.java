@@ -1,9 +1,7 @@
 package org.ruxlsr.module.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.enseignant.model.Enseignant;
-import org.ruxlsr.etudiant.model.Etudiant;
-import org.ruxlsr.module.IModuleServices;
+import org.ruxlsr.module.services.IModuleServices;
 import org.ruxlsr.module.model.Module;
 
 import java.util.ArrayList;
@@ -55,5 +53,9 @@ public class ModuleServices implements IModuleServices {
             }
         }
         return modTmp;
+    }
+    @Override
+    public Set<Module> getModules(){
+        return moduleDAO.getRecords();
     }
 }
