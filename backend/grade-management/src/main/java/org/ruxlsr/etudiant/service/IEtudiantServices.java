@@ -5,8 +5,8 @@ import org.ruxlsr.etudiant.model.Etudiant;
 import java.util.Set;
 
 public interface IEtudiantServices {
-    void ajouterEtudiant(Etudiant etudiant);
-    void supprimerEtudiant(Etudiant etudiant);
-    void updateEtudiant(Etudiant etudiant);
+    int ajouterEtudiant(Etudiant etudiant);
+    int supprimerEtudiant(Etudiant etudiant);
+    int updateEtudiant(Etudiant etudiant);
     Set<Etudiant> getEtudiants();
 }
