@@ -112,9 +112,9 @@ public class Main {
         put("/etudiants", (req, res) -> {
             LOGGER.log(Level.FINE, "PUT: \n /Etudiant");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
-            etudiantService.updateEtudiant(etudiant);
+            int rowAffected = etudiantService.updateEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant updated", 1)); //Assuming success
+            return gson.toJson(new Response("Etudiant updated", rowAffected)); //Assuming success
         });
 
         get("/etudiants", (req, res) -> {
