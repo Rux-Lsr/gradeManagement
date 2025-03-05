@@ -1,6 +1,9 @@
 package org.ruxlsr;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.dataaccess.services.impl.*;
 import org.ruxlsr.enseignant.model.Enseignant;
@@ -10,14 +13,20 @@ import org.ruxlsr.etudiant.model.Etudiant;
 import org.ruxlsr.etudiant.service.IEtudiantServices;
 import org.ruxlsr.etudiant.service.impl.EtudiantServices;
 import org.ruxlsr.evaluation.model.Evaluation;
+import org.ruxlsr.evaluation.model.EvaluationType;
 import org.ruxlsr.evaluation.model.Note;
 import org.ruxlsr.evaluation.services.IEvaluationService;
 import org.ruxlsr.evaluation.services.INotesService;
 import org.ruxlsr.evaluation.services.impl.EvaluationService;
 import org.ruxlsr.evaluation.services.impl.NoteService;
-import org.ruxlsr.module.IModuleServices;
+import org.ruxlsr.module.services.IModuleServices;
 import org.ruxlsr.module.model.Module;
 import org.ruxlsr.module.services.impl.ModuleServices;
+
+import java.sql.Timestamp;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Set;
 
 import static spark.Spark.*;
 
@@ -57,7 +66,6 @@ public class Main {
 
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-        get("/home", (req, res) -> "Hello the world");
 
         // Enseignant Routes
         post("/enseignants", (req, res) -> {
@@ -108,7 +116,18 @@ public class Main {
 
         // Evaluation Routes
         post("/evaluations", (req, res) -> {
-            Evaluation evaluation = gson.fromJson(req.body(), Evaluation.class);
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+
+            JsonElement eval = JsonParser.parseString(req.body());
+            JsonObject e = eval.getAsJsonObject();
+            OffsetDateTime offsetDateTime = OffsetDateTime.parse(e.get("date").getAsString(), formatter);
+            Evaluation evaluation = new Evaluation(null,
+                    e.get("moduleId").getAsInt(),
+                    new Timestamp(offsetDateTime.toInstant().toEpochMilli()), e.get("coef").getAsFloat(),
+                    e.get("max").getAsFloat(),
+                    EvaluationType.valueOf(e.get("evaluationType").getAsString())
+                );
+            System.out.println(e);
             int rowsAffected = evaluationService.addEvaluation(evaluation);
             res.type("application/json");
             return gson.toJson(new Response("Evaluation created", rowsAffected));
@@ -191,12 +210,16 @@ public class Main {
             return gson.toJson(module);
         });
 
+        get("/modules", (req, res) -> {
+            Set<Module> modules = moduleService.getModules();
+            res.type("application/json");
+            return gson.toJson(modules);
+        });
+
         exception(Exception.class, (exception, request, response) -> {
             response.status(500);
             response.body(gson.toJson(new ErrorResponse(exception.getMessage())));
         });
-
-
     }
 
     // Helper classes for responses
