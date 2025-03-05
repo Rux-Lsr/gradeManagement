@@ -136,10 +136,10 @@ This document describes the API endpoints available in the Ruxlsr backend.  The 
 * **Request Body:**
   ```json
   {
-    "id": "integer",     // Student ID to update
-    "nom": "string",   // Student's name
-    "prenom": "string",  // Student's first name
-    "email": "string"    // Student's email
+    "id":23,
+    "nom":"ruxlsr",
+    "prenom":"sonwa",
+    "matricule":"E11223"
   }
   ```
 * **Response Codes:**
