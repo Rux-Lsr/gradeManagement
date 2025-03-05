@@ -78,6 +78,7 @@ public class Main {
 
         delete("/enseignants", (req, res) -> {
             LOGGER.log(Level.FINE, "DELETE: \n /enseignant");
+            System.out.println("DELETE: \n /enseignant");
             Enseignant enseignant = gson.fromJson(req.body(), Enseignant.class);
             int rowsAffected = enseignantService.supprimerEnseignant(enseignant);
             res.type("application/json");
