@@ -4,5 +4,5 @@ public enum EvaluationType {
     CC,
     TP,
     SN,
-    Rattrapage
+    Rattrapage;
 }

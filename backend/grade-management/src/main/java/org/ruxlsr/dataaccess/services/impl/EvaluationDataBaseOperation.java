@@ -29,6 +29,7 @@ public class EvaluationDataBaseOperation implements DataBaseOperation<Evaluation
             stmt.setFloat(4, evaluation.max());
             stmt.setString(5, evaluation.evaluationType().name());
 
+
             return stmt.executeUpdate();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Insertion d'évaluation échouée : " + e.getLocalizedMessage(), e);
