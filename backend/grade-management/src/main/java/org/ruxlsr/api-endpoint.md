@@ -17,7 +17,8 @@ This document describes the API endpoints available in the Ruxlsr backend.  The 
   ```json
   {
     "nom": "string",   // Teacher's name
-    "specialite": "string"  // Teacher's specialty
+    "prenom": "string",  
+  "password": "string"
   }
   ```
 * **Response Codes:**

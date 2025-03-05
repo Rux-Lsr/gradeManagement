@@ -19,6 +19,9 @@ import org.ruxlsr.module.IModuleServices;
 import org.ruxlsr.module.model.Module;
 import org.ruxlsr.module.services.impl.ModuleServices;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import static spark.Spark.*;
 
 public class Main {
@@ -35,6 +38,7 @@ public class Main {
     private static final IEvaluationService evaluationService = new EvaluationService(evaluationDataBaseOperation);
     private static final INotesService notesService = new NoteService(noteDataBaseOperation);
     private static final IModuleServices moduleService = new ModuleServices(moduleDataBaseOperation);
+    static Logger LOGGER = Logger.getLogger(EnseignantDataBaseOperation.class.getName());
 
     public static void main(String[] args) {
         port(8000);
@@ -57,17 +61,23 @@ public class Main {
 
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
 
-        get("/home", (req, res) -> "Hello the world");
-
         // Enseignant Routes
         post("/enseignants", (req, res) -> {
+            LOGGER.log(Level.FINE, "POST: \n /enseignant"+req.body());
             Enseignant enseignant = gson.fromJson(req.body(), Enseignant.class);
+            System.out.println(enseignant);
             int rowsAffected = enseignantService.enregistrerEnseignant(enseignant);
             res.type("application/json");
+            if(rowsAffected == 0){
+                res.status(502);
+                return gson.toJson(new Response("Enseignant not created", rowsAffected));
+            }
+            res.status(202);
             return gson.toJson(new Response("Enseignant created", rowsAffected));
         });
 
         delete("/enseignants", (req, res) -> {
+            LOGGER.log(Level.FINE, "DELETE: \n /enseignant");
             Enseignant enseignant = gson.fromJson(req.body(), Enseignant.class);
             int rowsAffected = enseignantService.supprimerEnseignant(enseignant);
             res.type("application/json");
@@ -75,12 +85,14 @@ public class Main {
         });
 
         get("/enseignants", (req, res) -> {
+            LOGGER.log(Level.FINE, "GET: \n /enseignant");
             res.type("application/json");
             return gson.toJson(enseignantService.recupererListeEnseignants());
         });
 
         // Etudiant Routes
         post("/etudiants", (req, res) -> {
+            LOGGER.log(Level.FINE, "POST: \n /ETUDIANT");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
             etudiantService.ajouterEtudiant(etudiant);
             res.type("application/json");
@@ -88,6 +100,7 @@ public class Main {
         });
 
         delete("/etudiants", (req, res) -> {
+            LOGGER.log(Level.FINE, "DELETE: \n /etudiant");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
             etudiantService.supprimerEtudiant(etudiant);
             res.type("application/json");
@@ -95,6 +108,7 @@ public class Main {
         });
 
         put("/etudiants", (req, res) -> {
+            LOGGER.log(Level.FINE, "PUT: \n /Etudiant");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
             etudiantService.updateEtudiant(etudiant);
             res.type("application/json");
@@ -102,6 +116,7 @@ public class Main {
         });
 
         get("/etudiants", (req, res) -> {
+            LOGGER.log(Level.FINE, "GET: \n /etudiant");
             res.type("application/json");
             return gson.toJson(etudiantService.getEtudiants());
         });
@@ -214,6 +229,8 @@ public class Main {
             this.rowsAffected = success ? 1 : 0;
         }
     }
+
+
 
     static class ErrorResponse {
         public String error;

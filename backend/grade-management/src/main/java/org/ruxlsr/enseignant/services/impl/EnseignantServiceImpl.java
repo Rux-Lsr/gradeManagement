@@ -1,11 +1,13 @@
 package org.ruxlsr.enseignant.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.dataaccess.services.impl.EnseignantDataBaseOperation;
 import org.ruxlsr.enseignant.model.Enseignant;
 import org.ruxlsr.enseignant.services.IEnseignantService;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class EnseignantServiceImpl  implements IEnseignantService {
 
@@ -18,13 +20,19 @@ public class EnseignantServiceImpl  implements IEnseignantService {
 
     @Override
     public int enregistrerEnseignant(Enseignant enseignant) {
-        if (enseignant.id() == 0) {
-            // Nouvel enseignant
-            return dbOperation.createEntities(enseignant);
-        } else {
-            // Mise à jour d'un enseignant existant
-            return dbOperation.update(enseignant);
-        }
+        List<Enseignant> enseignantList = new ArrayList<>(recupererListeEnseignants());
+        AtomicInteger res = new AtomicInteger(1  );
+
+        enseignantList.forEach((e -> {
+            if(e.nom().equals(enseignant.nom())  && e.prenom().equals(enseignant.prenom()) ){
+                res.set(0);
+                System.out.println(e);
+            }
+
+        }));
+        if(res.get() == 0)
+            return 0;
+        return dbOperation.createEntities(enseignant);
     }
 
     @Override

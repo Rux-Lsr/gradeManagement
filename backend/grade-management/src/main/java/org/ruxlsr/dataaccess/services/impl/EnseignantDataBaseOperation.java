@@ -23,6 +23,7 @@ public class EnseignantDataBaseOperation implements DataBaseOperation<Enseignant
             stmt.setString(2, enseignant.prenom());
             stmt.setString(3, enseignant.password());
 
+
             return stmt.executeUpdate();
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Insertion failed: cause :"+e.getCause()+"\nLocalised message: "+e.getLocalizedMessage());

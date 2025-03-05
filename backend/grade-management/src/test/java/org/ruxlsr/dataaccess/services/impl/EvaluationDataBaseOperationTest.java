@@ -25,7 +25,7 @@ class EvaluationDataBaseOperationTest {
         List<Module> moduleList = new ArrayList<>(moduleDbOp.getRecords());
 
         // Créer une nouvelle Evaluation
-        Evaluation newEvaluation = new Evaluation(0, moduleList.getFirst().id(), new Timestamp(System.currentTimeMillis()), 2.5f, 20.0f, EvaluationType.SN);
+        Evaluation newEvaluation = new Evaluation(0, moduleList.getFirst().getId(), new Timestamp(System.currentTimeMillis()), 2.5f, 20.0f, EvaluationType.SN);
 
         // Appel de la méthode createEntities
         rowCount = evaluationDbOp.createEntities(newEvaluation);
@@ -60,7 +60,7 @@ class EvaluationDataBaseOperationTest {
         List<Module> moduleList = new ArrayList<>(moduleDbOp.getRecords());
 
         // Mettre à jour l'Evaluation
-        Evaluation updatedEvaluation = new Evaluation(evaluations.getLast().id(), moduleList.getLast().id(), new Timestamp(System.currentTimeMillis()), 4.0f, 40.0f, EvaluationType.SN);
+        Evaluation updatedEvaluation = new Evaluation(evaluations.getLast().id(), moduleList.getLast().getId(), new Timestamp(System.currentTimeMillis()), 4.0f, 40.0f, EvaluationType.SN);
         int rowCount = evaluationDbOp.update(updatedEvaluation);
 
         // Vérifier qu'une ligne a bien été mise à jour
