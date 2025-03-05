@@ -91,7 +91,8 @@ This document describes the API endpoints available in the Ruxlsr backend.  The 
   {
     "nom": "string",   // Student's name
     "prenom": "string",  // Student's first name
-    "email": "string"    // Student's email
+    "matricule": "string",    // Student's email
+    "moduleId": "integer"
   }
   ```
 * **Response Codes:**

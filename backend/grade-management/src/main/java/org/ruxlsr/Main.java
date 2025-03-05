@@ -95,17 +95,18 @@ public class Main {
         post("/etudiants", (req, res) -> {
             LOGGER.log(Level.FINE, "POST: \n /ETUDIANT");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
-            etudiantService.ajouterEtudiant(etudiant);
+           int rowAffected = etudiantService.ajouterEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant created", 1)); //Assuming success
+            return gson.toJson(new Response("Etudiant created", rowAffected)); //Assuming success
         });
 
         delete("/etudiants", (req, res) -> {
             LOGGER.log(Level.FINE, "DELETE: \n /etudiant");
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
-            etudiantService.supprimerEtudiant(etudiant);
+            int rowAffected = etudiantService.supprimerEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant deleted", 1)); //Assuming success
+
+            return gson.toJson(new Response("Etudiant deleted", rowAffected)); //Assuming success
         });
 
         put("/etudiants", (req, res) -> {
