@@ -211,6 +211,7 @@ public class Main {
         });
 
         get("/modules", (req, res) -> {
+            System.out.println("get on module: "+req.userAgent());
             Set<Module> modules = moduleService.getModules();
             res.type("application/json");
             return gson.toJson(modules);
