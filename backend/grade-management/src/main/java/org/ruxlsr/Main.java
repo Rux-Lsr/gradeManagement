@@ -90,6 +90,7 @@ public class Main {
         // Etudiant Routes
         post("/etudiants", (req, res) -> {
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
+            System.out.println("POST on etudiants"+etudiant);
             etudiantService.ajouterEtudiant(etudiant);
             res.type("application/json");
             return gson.toJson(new Response("Etudiant created", 1)); //Assuming success
@@ -104,6 +105,7 @@ public class Main {
 
         put("/etudiants", (req, res) -> {
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
+            System.out.println("PUT on etudiants"+etudiant);
             etudiantService.updateEtudiant(etudiant);
             res.type("application/json");
             return gson.toJson(new Response("Etudiant updated", 1)); //Assuming success

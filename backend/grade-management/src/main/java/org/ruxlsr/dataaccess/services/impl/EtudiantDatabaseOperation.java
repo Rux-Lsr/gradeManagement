@@ -17,12 +17,13 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
     private static final Logger LOGGER = Logger.getLogger(EtudiantDatabaseOperation.class.getName());
     @Override
     public int createEntities(Etudiant etudiant) {
-        String sql = "INSERT INTO Etudiant ( nom, prenom, matricule) values ( ?, ?, ?);";
+        String sql = "INSERT INTO Etudiant ( nom, prenom, matricule, moduleId) values ( ?, ?, ?, ?);";
         try(Connection con = MysqlDbConnection.getInstance().getConnection();
             PreparedStatement stmt = con.prepareStatement(sql);){
             stmt.setString(1, etudiant.nom());
             stmt.setString(2, etudiant.prenom());
             stmt.setString(3, etudiant.matricule());
+            stmt.setInt(4, etudiant.moduleId());
 
             return stmt.executeUpdate();
         } catch (Exception e) {
@@ -44,7 +45,7 @@ public class EtudiantDatabaseOperation implements DataBaseOperation<Etudiant> {
                         result.getInt("id"),
                         result.getString("nom"),
                         result.getString("prenom"),
-                        result.getString("matricule")
+                        result.getString("matricule"),result.getInt("moduleId")
                 );
                 etudiants.add(etudiant);
             }

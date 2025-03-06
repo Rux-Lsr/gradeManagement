@@ -96,7 +96,8 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
                             rs.getInt("etudiantId"),
                             rs.getString("etudiantNom"),
                             rs.getString("etudiantPrenom"),
-                            rs.getString("etudiantMatricule")
+                            rs.getString("etudiantMatricule"),
+                            rs.getInt("ModuleId")
                     );
                     module.getEtudiantSet().add(etudiant);
                 }

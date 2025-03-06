@@ -6,7 +6,7 @@ const Sidebar = () => {
       <div className="card card-side bg-base-100 shadow-xl mb-4">
         <figure>
           <img
-            src="https://via.placeholder.com/40"
+            src="https://picsum.photos/200/300"
             alt="Profile"
             className="rounded-full w-16 h-16"
           />
