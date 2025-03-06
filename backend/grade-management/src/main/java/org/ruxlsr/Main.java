@@ -19,6 +19,8 @@ import org.ruxlsr.evaluation.services.IEvaluationService;
 import org.ruxlsr.evaluation.services.INotesService;
 import org.ruxlsr.evaluation.services.impl.EvaluationService;
 import org.ruxlsr.evaluation.services.impl.NoteService;
+import org.ruxlsr.generationficherecapitulative.services.IRecapService;
+import org.ruxlsr.generationficherecapitulative.services.impl.RecapService;
 import org.ruxlsr.module.services.IModuleServices;
 import org.ruxlsr.module.model.Module;
 import org.ruxlsr.module.services.impl.ModuleServices;
@@ -45,6 +47,11 @@ public class Main {
     private static final INotesService notesService = new NoteService(noteDataBaseOperation);
     private static final IModuleServices moduleService = new ModuleServices(moduleDataBaseOperation);
 
+    private static final IRecapService recapService = new RecapService(
+            moduleDataBaseOperation,
+            noteDataBaseOperation,
+            evaluationDataBaseOperation);
+
     public static void main(String[] args) {
         port(8000);
         ipAddress("127.0.0.1");
@@ -65,7 +72,6 @@ public class Main {
         });
 
         before((request, response) -> response.header("Access-Control-Allow-Origin", "*"));
-
 
         // Enseignant Routes
         post("/enseignants", (req, res) -> {
@@ -90,25 +96,25 @@ public class Main {
         // Etudiant Routes
         post("/etudiants", (req, res) -> {
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
-            System.out.println("POST on etudiants"+etudiant);
+            System.out.println("POST on etudiants" + etudiant);
             etudiantService.ajouterEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant created", 1)); //Assuming success
+            return gson.toJson(new Response("Etudiant created", 1)); // Assuming success
         });
 
         delete("/etudiants", (req, res) -> {
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
             etudiantService.supprimerEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant deleted", 1)); //Assuming success
+            return gson.toJson(new Response("Etudiant deleted", 1)); // Assuming success
         });
 
         put("/etudiants", (req, res) -> {
             Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
-            System.out.println("PUT on etudiants"+etudiant);
+            System.out.println("PUT on etudiants" + etudiant);
             etudiantService.updateEtudiant(etudiant);
             res.type("application/json");
-            return gson.toJson(new Response("Etudiant updated", 1)); //Assuming success
+            return gson.toJson(new Response("Etudiant updated", 1)); // Assuming success
         });
 
         get("/etudiants", (req, res) -> {
@@ -127,8 +133,7 @@ public class Main {
                     e.get("moduleId").getAsInt(),
                     new Timestamp(offsetDateTime.toInstant().toEpochMilli()), e.get("coef").getAsFloat(),
                     e.get("max").getAsFloat(),
-                    EvaluationType.valueOf(e.get("evaluationType").getAsString())
-                );
+                    EvaluationType.valueOf(e.get("evaluationType").getAsString()));
             System.out.println(e);
             int rowsAffected = evaluationService.addEvaluation(evaluation);
             res.type("application/json");
@@ -185,7 +190,8 @@ public class Main {
         post("/modules", (req, res) -> {
             // Assuming request body is JSON with nom, description, credit
             ModuleCreationRequest moduleRequest = gson.fromJson(req.body(), ModuleCreationRequest.class);
-            boolean success = moduleService.creerModule(moduleRequest.nom, moduleRequest.description, moduleRequest.credit);
+            boolean success = moduleService.creerModule(moduleRequest.nom, moduleRequest.description,
+                    moduleRequest.credit);
             res.type("application/json");
             return gson.toJson(new Response("Module created", success ? 1 : 0));
         });
@@ -200,7 +206,8 @@ public class Main {
         put("/modules/:id", (req, res) -> {
             int id = Integer.parseInt(req.params(":id"));
             ModuleCreationRequest moduleRequest = gson.fromJson(req.body(), ModuleCreationRequest.class);
-            boolean success = moduleService.modifierInfoModule(id, moduleRequest.nom, moduleRequest.description, moduleRequest.credit);
+            boolean success = moduleService.modifierInfoModule(id, moduleRequest.nom, moduleRequest.description,
+                    moduleRequest.credit);
             res.type("application/json");
             return gson.toJson(new Response("Module updated", success ? 1 : 0));
         });
@@ -213,10 +220,41 @@ public class Main {
         });
 
         get("/modules", (req, res) -> {
-            System.out.println("get on module: "+req.userAgent());
+            System.out.println("get on module: " + req.userAgent());
             Set<Module> modules = moduleService.getModules();
             res.type("application/json");
             return gson.toJson(modules);
+        });
+
+        get("/modules/:id/recap", (req, res) -> {
+            int moduleId = Integer.parseInt(req.params(":id"));
+            var recap = recapService.genererRecapModule(moduleId);
+            res.type("application/json");
+            return gson.toJson(recap);
+        });
+
+        get("/modules/:id/recap/csv", (req, res) -> {
+            int moduleId = Integer.parseInt(req.params(":id"));
+            var recap = recapService.genererRecapModule(moduleId);
+
+            // Build CSV content
+            StringBuilder csv = new StringBuilder();
+            csv.append("Nom,Prenom,Matricule,CC,TP,SN,Moyenne Generale\n");
+
+            for (var r : recap) {
+                csv.append(String.format("%s,%s,%s,%.2f,%.2f,%.2f,%.2f\n",
+                        r.etudiant().nom(),
+                        r.etudiant().prenom(),
+                        r.etudiant().matricule(),
+                        r.moyenneCC(),
+                        r.moyenneTP(),
+                        r.moyenneSN(),
+                        r.moyenneGenerale()));
+            }
+
+            res.type("text/csv");
+            res.header("Content-Disposition", "attachment; filename=recap-module-" + moduleId + ".csv");
+            return csv.toString();
         });
 
         exception(Exception.class, (exception, request, response) -> {
