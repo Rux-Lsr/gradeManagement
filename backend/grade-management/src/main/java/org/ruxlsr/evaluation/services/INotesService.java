@@ -10,3 +10,4 @@ public interface INotesService {
     public int update(Note note);
     public int delete(Note note);
 }
+
