@@ -61,8 +61,10 @@ public class NoteDataBaseOperation implements DataBaseOperation<Note> {
     public int update(Note note) {
         String sql = "UPDATE Note SET note = ? WHERE evaluationId = ? AND etudiantId = ?";
 
-        try (Connection con = MysqlDbConnection.getInstance().getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+        try  {
+
+            Connection con = MysqlDbConnection.getInstance().getConnection();
+            PreparedStatement stmt = con.prepareStatement(sql);
 
             stmt.setFloat(1, note.note());
             stmt.setInt(2, note.evaluationId());
