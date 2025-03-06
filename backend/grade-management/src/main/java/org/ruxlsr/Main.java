@@ -242,14 +242,13 @@ public class Main {
             csv.append("Nom,Prenom,Matricule,CC,TP,SN,Moyenne Generale\n");
 
             for (var r : recap) {
-                csv.append(String.format("%s,%s,%s,%.2f,%.2f,%.2f,%.2f\n",
+                csv.append(String.format("%s,%s,%s,%.2f,%.2f,%.2f\n",
                         r.etudiant().nom(),
                         r.etudiant().prenom(),
                         r.etudiant().matricule(),
                         r.moyenneCC(),
                         r.moyenneTP(),
-                        r.moyenneSN(),
-                        r.moyenneGenerale()));
+                        r.moyenneSN()));
             }
 
             res.type("text/csv");
