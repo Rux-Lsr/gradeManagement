@@ -48,9 +48,13 @@ const Notes = () => {
 
   const handleAddEvaluation = (e) => {
     e.preventDefault();
+
+    // Convert the date string to Unix timestamp (milliseconds since epoch)
+    const isoDate = new Date(evaluationDate).toISOString();
+
     const newEvaluation = {
       moduleId: selectedModule,
-      date: evaluationDate,
+      date: isoDate, // Send as integer timestamp
       typeEvaluation: evaluationType,
       coef: parseFloat(evaluationCoef),
       max: parseFloat(evaluationMax),
@@ -95,14 +99,25 @@ const Notes = () => {
   };
 
   const handleSaveGrades = () => {
-    const updates = Object.keys(grades).map((key) => {
-      const [studentId, evaluationId] = key.split("-");
-      return {
-        etudiantId: studentId,
-        evaluationId: evaluationId,
-        note: Number(grades[key]),
-      };
-    });
+    const updates = Object.keys(grades)
+      .map((key) => {
+        const [studentId, evaluationId] = key.split("-");
+        const gradeValue = grades[key];
+        return {
+          etudiantId: parseInt(studentId),
+          evaluationId: parseInt(evaluationId),
+          note: gradeValue === "" ? 0 : parseFloat(gradeValue), // Set empty values to 0
+        };
+      })
+      .filter((update) => !isNaN(update.note)); // Only filter NaN values
+
+    // If no valid updates, return early
+    if (updates.length === 0) {
+      setIsSuccess(false);
+      setModalMessage("Aucune note valide à enregistrer.");
+      setShowModal(true);
+      return;
+    }
 
     Promise.all(
       updates.map((update) =>
@@ -112,25 +127,40 @@ const Notes = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(update),
+        }).then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          return response.json();
         })
       )
     )
-      .then((responses) => Promise.all(responses.map((res) => res.json())))
       .then((results) => {
         const success = results.every((result) => result.rowsAffected > 0);
         if (success) {
-          setIsSuccess(true);
-          setModalMessage("Notes mises à jour avec succès !");
-        } else {
-          setIsSuccess(false);
-          setModalMessage("Erreur lors de la mise à jour des notes.");
+          // Update local grades state with zeros for empty values
+          const updatedGrades = { ...grades };
+          Object.keys(updatedGrades).forEach((key) => {
+            if (updatedGrades[key] === "") {
+              updatedGrades[key] = 0;
+            }
+          });
+          setGrades(updatedGrades);
         }
+        setIsSuccess(success);
+        setModalMessage(
+          success
+            ? "Notes mises à jour avec succès !"
+            : "Erreur lors de la mise à jour des notes."
+        );
         setShowModal(true);
       })
       .catch((error) => {
         console.error("Error updating grades:", error);
         setIsSuccess(false);
-        setModalMessage("Erreur lors de la mise à jour des notes.");
+        setModalMessage(
+          "Erreur lors de la mise à jour des notes: " + error.message
+        );
         setShowModal(true);
       });
   };
@@ -267,6 +297,9 @@ const Notes = () => {
                         <td key={evaluation.id}>
                           <input
                             type="number"
+                            step="0.01" // Added step for decimal precision
+                            min="0" // Added minimum value
+                            max={evaluation.max} // Added maximum value based on evaluation
                             value={
                               grades[`${student.id}-${evaluation.id}`] || ""
                             }
@@ -274,7 +307,9 @@ const Notes = () => {
                               handleGradeChange(
                                 student.id,
                                 evaluation.id,
-                                e.target.value
+                                e.target.value === ""
+                                  ? ""
+                                  : parseFloat(e.target.value)
                               )
                             }
                             className="input input-bordered w-full"

@@ -26,9 +26,13 @@ import org.ruxlsr.module.model.Module;
 import org.ruxlsr.module.services.impl.ModuleServices;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static spark.Spark.*;
 
@@ -55,7 +59,9 @@ public class Main {
     public static void main(String[] args) {
         port(8000);
         ipAddress("127.0.0.1");
-
+        System.out.println("Server started on port 8000 at localhost");
+        System.out.println("Database connection established");
+        System.out.println("Waiting for requests...");
         // Enable CORS
         options("/*", (request, response) -> {
             String accessControlRequestHeaders = request.headers("Access-Control-Request-Headers");
@@ -124,20 +130,23 @@ public class Main {
 
         // Evaluation Routes
         post("/evaluations", (req, res) -> {
-            DateTimeFormatter formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME;
+            JsonObject body = JsonParser.parseString(req.body()).getAsJsonObject();
 
-            JsonElement eval = JsonParser.parseString(req.body());
-            JsonObject e = eval.getAsJsonObject();
-            OffsetDateTime offsetDateTime = OffsetDateTime.parse(e.get("date").getAsString(), formatter);
-            Evaluation evaluation = new Evaluation(null,
-                    e.get("moduleId").getAsInt(),
-                    new Timestamp(offsetDateTime.toInstant().toEpochMilli()), e.get("coef").getAsFloat(),
-                    e.get("max").getAsFloat(),
-                    EvaluationType.valueOf(e.get("evaluationType").getAsString()));
-            System.out.println(e);
-            int rowsAffected = evaluationService.addEvaluation(evaluation);
-            res.type("application/json");
-            return gson.toJson(new Response("Evaluation created", rowsAffected));
+            // Convert ISO string to Timestamp
+            Timestamp date = Timestamp.from(Instant.parse(body.get("date").getAsString()));
+
+            Evaluation evaluation = new Evaluation(
+                    null, // id will be generated
+                    body.get("moduleId").getAsInt(),
+                    date,
+                    body.get("coef").getAsFloat(),
+                    body.get("max").getAsFloat(),
+                    EvaluationType.valueOf(body.get("typeEvaluation").getAsString())
+            );
+
+            int row  = evaluationDataBaseOperation.createEntities(evaluation);
+            System.out.println(row);
+            return gson.toJson(Map.of("rowsAffected", 1));
         });
 
         delete("/evaluations", (req, res) -> {
