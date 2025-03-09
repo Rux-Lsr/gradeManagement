@@ -1,6 +1,6 @@
 # Instructions d'exécution du projet
 
-Frontend (React + Vite)
+## Frontend (React + Vite)
 
 ```bash
 
@@ -17,12 +17,14 @@ npm install
 npm run dev
 ```
 
-Le frontend sera accessible par défaut sur http://localhost:5173
+Le frontend sera accessible par défaut sur `http://localhost:5173`
 
-# Backend (Spark Java)
+## Backend (Spark Java)
 
-Adapter les parametres de connexion a la bd dans dossier `utils` de `dataaccess` pour votre SGBD de donnee en modifiant les variable `URL, PASSWORD, USER`
-Le backend sera accessible par défaut sur http://127.0.0.1:8000 comme indiqué dans api-endpoint.md
+1. Adapter les parametres de connexion a la bd dans dossier `utils` de `dataaccess` pour votre SGBD de donnee en modifiant les variable `URL, PASSWORD, USER`
+   Le backend sera accessible par défaut sur `http://127.0.0.1:8000` comme indiqué dans api-endpoint.md
+
+2.
 
 ```bash
 # Se déplacer dans le dossier backend
@@ -46,6 +48,6 @@ Maven
 MySQL Server
 backup Base de données :
 
-Configurer la base de données MySQL selon le script dans bd.sql
+Configurer la base de données MySQL selon le script dans `backup_gradeManager.sql`
 Note importante
 Les deux parties (frontend et backend) doivent être exécutées simultanément dans des terminaux séparés pour que l'application fonctionne correctement.
