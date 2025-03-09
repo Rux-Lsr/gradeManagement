@@ -15,6 +15,9 @@ const Notes = () => {
   const [showModal, setShowModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [moduleValidated, setModuleValidated] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [currentBatch, setCurrentBatch] = useState([]);
+  const [notification, setNotification] = useState(null);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/modules")
@@ -30,12 +33,21 @@ const Notes = () => {
         setStudents(module.etudiantSet);
         setEvaluations(module.evaluationSet);
 
-        fetch(`http://127.0.0.1:8000/notes?moduleId=${selectedModule}`)
+        // Récupérer toutes les notes et filtrer côté client
+        fetch("http://127.0.0.1:8000/notes")
           .then((response) => response.json())
           .then((data) => {
-            setNotes(data);
+            // Filtrer les notes pour ce module
+            const moduleEvaluationIds = module.evaluationSet.map(
+              (eva) => eva.id
+            );
+            const moduleNotes = data.filter((note) =>
+              moduleEvaluationIds.includes(note.evaluationId)
+            );
+
+            setNotes(moduleNotes);
             const initialGrades = {};
-            data.forEach((note) => {
+            moduleNotes.forEach((note) => {
               initialGrades[`${note.etudiantId}-${note.evaluationId}`] =
                 note.note;
             });
@@ -71,7 +83,7 @@ const Notes = () => {
       .then((data) => {
         if (data.rowsAffected > 0) {
           setEvaluations([...evaluations, newEvaluation]);
-          setEvaluationType("");
+          setEvaluationType(""); // Correction ici
           setEvaluationDate("");
           setEvaluationCoef("");
           setEvaluationMax("");
@@ -165,8 +177,69 @@ const Notes = () => {
       });
   };
 
+  const handleBatchSave = async () => {
+    if (currentBatch.length === 0) return;
+
+    try {
+      setIsSuccess(false);
+      setModalMessage("Enregistrement en cours...");
+      setShowModal(true);
+
+      await Promise.all(
+        currentBatch.map((update) =>
+          fetch("http://127.0.0.1:8000/notes", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(update),
+          })
+        )
+      );
+
+      setCurrentBatch([]);
+      setNotification({ type: "success", message: "Lot de notes enregistré" });
+      setTimeout(() => setNotification(null), 3000);
+    } catch (error) {
+      setNotification({
+        type: "error",
+        message: "Erreur lors de l'enregistrement",
+      });
+    }
+  };
+
   const handleValidateModule = () => {
     setModuleValidated(true);
+  };
+
+  // Add an autopersist function
+  const autoPersistGrade = async (studentId, evaluationId, value) => {
+    try {
+      const update = {
+        etudiantId: parseInt(studentId),
+        evaluationId: parseInt(evaluationId),
+        note: value === "" ? 0 : parseFloat(value),
+      };
+
+      const response = await fetch("http://127.0.0.1:8000/notes", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(update),
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      setNotification({
+        type: "success",
+        message: "Note sauvegardée",
+      });
+      setTimeout(() => setNotification(null), 2000);
+    } catch (error) {
+      setNotification({
+        type: "error",
+        message: "Erreur de sauvegarde",
+      });
+    }
   };
 
   return (
@@ -272,60 +345,158 @@ const Notes = () => {
 
           <div className="card bg-base-100 shadow-xl">
             <div className="card-body">
-              <h1 className="card-title text-2xl font-bold">
-                Liste des Étudiants
-              </h1>
-              <table className="table-auto w-full">
-                <thead>
-                  <tr>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    {evaluations.map((evaluation) => (
-                      <th key={evaluation.id}>
-                        {evaluation.typeEvaluation} -{" "}
-                        {new Date(evaluation.date).toLocaleDateString()}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {students.map((student) => (
-                    <tr key={student.id}>
-                      <td>{student.nom}</td>
-                      <td>{student.prenom}</td>
+              <div className="flex justify-between items-center mb-4">
+                <h1 className="card-title text-2xl font-bold">
+                  Liste des Étudiants
+                </h1>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setEditMode(!editMode)}
+                    className={`btn ${
+                      editMode ? "btn-primary" : "btn-outline"
+                    }`}
+                  >
+                    {editMode ? "Mode Lecture" : "Mode Édition"}
+                  </button>
+                  <button
+                    onClick={handleBatchSave}
+                    className="btn btn-success"
+                    disabled={currentBatch.length === 0}
+                  >
+                    Sauvegarder ({currentBatch.length})
+                  </button>
+                </div>
+              </div>
+
+              {/* Notification flottante */}
+              {notification && (
+                <div
+                  className={`alert ${
+                    notification.type === "success"
+                      ? "alert-success"
+                      : "alert-error"
+                  } mb-4`}
+                >
+                  <span>{notification.message}</span>
+                </div>
+              )}
+
+              <div className="overflow-x-auto">
+                <table className="table table-zebra w-full">
+                  <thead>
+                    <tr>
+                      <th>Nom</th>
+                      <th>Prénom</th>
                       {evaluations.map((evaluation) => (
-                        <td key={evaluation.id}>
-                          <input
-                            type="number"
-                            step="0.01" // Added step for decimal precision
-                            min="0" // Added minimum value
-                            max={evaluation.max} // Added maximum value based on evaluation
-                            value={
-                              grades[`${student.id}-${evaluation.id}`] || ""
-                            }
-                            onChange={(e) =>
-                              handleGradeChange(
-                                student.id,
-                                evaluation.id,
-                                e.target.value === ""
-                                  ? ""
-                                  : parseFloat(e.target.value)
-                              )
-                            }
-                            className="input input-bordered w-full"
-                          />
-                        </td>
+                        <th key={evaluation.id} className="text-center">
+                          <div>{evaluation.typeEvaluation}</div>
+                          <div className="text-sm opacity-70">
+                            {new Date(evaluation.date).toLocaleDateString()}
+                          </div>
+                          <div className="text-xs opacity-50">
+                            Max: {evaluation.max} - Coef: {evaluation.coef}
+                          </div>
+                        </th>
                       ))}
+                      <th className="text-center">Actions</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-              <button
-                onClick={handleSaveGrades}
-                className="btn btn-primary mt-4"
-              >
-                Enregistrer les Notes
-              </button>
+                  </thead>
+                  <tbody>
+                    {students.map((student) => (
+                      <tr key={student.id}>
+                        <td>{student.nom}</td>
+                        <td>{student.prenom}</td>
+                        {evaluations.map((evaluation) => {
+                          const gradeKey = `${student.id}-${evaluation.id}`;
+                          const currentGrade = grades[gradeKey] || "";
+                          return (
+                            <td key={evaluation.id} className="text-center">
+                              {editMode ? (
+                                <input
+                                  type="number"
+                                  step="0.01"
+                                  min="0"
+                                  max={evaluation.max}
+                                  value={currentGrade}
+                                  onChange={(e) => {
+                                    const value = e.target.value;
+                                    if (
+                                      value === "" ||
+                                      (parseFloat(value) >= 0 &&
+                                        parseFloat(value) <= evaluation.max)
+                                    ) {
+                                      handleGradeChange(
+                                        student.id,
+                                        evaluation.id,
+                                        value
+                                      );
+                                      // Debounce the auto-persist
+                                      const timeoutId = setTimeout(() => {
+                                        autoPersistGrade(
+                                          student.id,
+                                          evaluation.id,
+                                          value
+                                        );
+                                      }, 1000);
+                                      return () => clearTimeout(timeoutId);
+                                    }
+                                  }}
+                                  onBlur={() => {
+                                    // Persist on blur for immediate feedback
+                                    if (currentGrade !== "") {
+                                      autoPersistGrade(
+                                        student.id,
+                                        evaluation.id,
+                                        currentGrade
+                                      );
+                                    }
+                                  }}
+                                  className="input input-bordered input-sm w-20 text-center"
+                                />
+                              ) : (
+                                <span
+                                  className={
+                                    currentGrade >= evaluation.max * 0.7
+                                      ? "text-success"
+                                      : currentGrade < evaluation.max * 0.5
+                                      ? "text-error"
+                                      : "text-warning"
+                                  }
+                                >
+                                  {currentGrade}
+                                </span>
+                              )}
+                            </td>
+                          );
+                        })}
+                        <td className="text-center">
+                          {editMode && (
+                            <button
+                              className="btn btn-ghost btn-xs"
+                              onClick={() => {
+                                // Réinitialiser les notes pour cet étudiant
+                                const studentGrades = evaluations.reduce(
+                                  (acc, ev) => {
+                                    acc[`${student.id}-${ev.id}`] = "";
+                                    return acc;
+                                  },
+                                  {}
+                                );
+                                setGrades((prev) => ({
+                                  ...prev,
+                                  ...studentGrades,
+                                }));
+                              }}
+                            >
+                              Réinitialiser
+                            </button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
         </>

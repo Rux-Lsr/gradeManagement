@@ -1,11 +1,11 @@
 package org.ruxlsr.generationficherecapitulative.services.impl;
 
-import org.ruxlsr.calculmoyenne.model.Moyenne;
-import org.ruxlsr.calculmoyenne.services.MoyenneService;
+import org.ruxlsr.generationficherecapitulative.model.Moyenne;
+import org.ruxlsr.generationficherecapitulative.services.MoyenneService;
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.etudiant.model.Etudiant;
 import org.ruxlsr.evaluation.model.Evaluation;
-import org.ruxlsr.evaluation.model.Note;
+import org.ruxlsr.evaluation.note.model.Note;
 import org.ruxlsr.generationficherecapitulative.model.RecapModule;
 import org.ruxlsr.generationficherecapitulative.services.IRecapService;
 import org.ruxlsr.module.model.Module;

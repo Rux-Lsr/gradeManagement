@@ -1,10 +1,10 @@
-package org.ruxlsr.calculmoyenne.services;
+package org.ruxlsr.generationficherecapitulative.services;
 
-import org.ruxlsr.calculmoyenne.model.Moyenne;
+import org.ruxlsr.generationficherecapitulative.model.Moyenne;
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.evaluation.model.Evaluation;
 import org.ruxlsr.evaluation.model.EvaluationType;
-import org.ruxlsr.evaluation.model.Note;
+import org.ruxlsr.evaluation.note.model.Note;
 
 import java.util.List;
 import java.util.Map;

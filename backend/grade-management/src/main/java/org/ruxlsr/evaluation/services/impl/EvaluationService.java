@@ -4,7 +4,6 @@ import java.util.Set;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.evaluation.model.Evaluation;
-import org.ruxlsr.evaluation.model.Note;
 import org.ruxlsr.evaluation.services.IEvaluationService;
 
 public class EvaluationService implements IEvaluationService{

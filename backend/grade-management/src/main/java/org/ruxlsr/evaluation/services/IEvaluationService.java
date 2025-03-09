@@ -1,10 +1,8 @@
 package org.ruxlsr.evaluation.services;
 
-import java.util.List;
 import java.util.Set;
 
 import org.ruxlsr.evaluation.model.Evaluation;
-import org.ruxlsr.evaluation.model.Note;
 
 public interface IEvaluationService {
     

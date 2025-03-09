@@ -1,7 +1,6 @@
 package org.ruxlsr;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
@@ -14,11 +13,11 @@ import org.ruxlsr.etudiant.service.IEtudiantServices;
 import org.ruxlsr.etudiant.service.impl.EtudiantServices;
 import org.ruxlsr.evaluation.model.Evaluation;
 import org.ruxlsr.evaluation.model.EvaluationType;
-import org.ruxlsr.evaluation.model.Note;
+import org.ruxlsr.evaluation.note.model.Note;
 import org.ruxlsr.evaluation.services.IEvaluationService;
-import org.ruxlsr.evaluation.services.INotesService;
+import org.ruxlsr.evaluation.note.service.INotesService;
 import org.ruxlsr.evaluation.services.impl.EvaluationService;
-import org.ruxlsr.evaluation.services.impl.NoteService;
+import org.ruxlsr.evaluation.note.service.impl.NoteService;
 import org.ruxlsr.generationficherecapitulative.services.IRecapService;
 import org.ruxlsr.generationficherecapitulative.services.impl.RecapService;
 import org.ruxlsr.module.services.IModuleServices;
@@ -27,12 +26,8 @@ import org.ruxlsr.module.services.impl.ModuleServices;
 
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import static spark.Spark.*;
 
@@ -173,7 +168,10 @@ public class Main {
             Note note = gson.fromJson(req.body(), Note.class);
             int rowsAffected = notesService.createNote(note);
             res.type("application/json");
-            return gson.toJson(new Response("Note created", rowsAffected));
+            if(rowsAffected > 0)
+                return gson.toJson(new Response("Note created", rowsAffected));
+            else
+                return gson.toJson(new Response("Note not created", rowsAffected));
         });
 
         get("/notes", (req, res) -> {
@@ -206,9 +204,13 @@ public class Main {
         });
 
         delete("/modules", (req, res) -> {
-            Module module = gson.fromJson(req.body(), Module.class);
+
+            JsonObject body = JsonParser.parseString(req.body()).getAsJsonObject();
+            Integer idModuleToDelete = body.get("id").getAsInt();
+            Module module = new Module(idModuleToDelete, "null", "null", 0, Set.of(), Set.of());
             boolean success = moduleService.supprimerModule(module);
             res.type("application/json");
+            System.out.println("request for deletion of : #"+idModuleToDelete);
             return gson.toJson(new Response("Module deleted", success ? 1 : 0));
         });
 

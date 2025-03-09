@@ -2,7 +2,7 @@ package org.ruxlsr.dataaccess.services.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
 import org.ruxlsr.dataaccess.util.MysqlDbConnection;
-import org.ruxlsr.evaluation.model.Note;
+import org.ruxlsr.evaluation.note.model.Note;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

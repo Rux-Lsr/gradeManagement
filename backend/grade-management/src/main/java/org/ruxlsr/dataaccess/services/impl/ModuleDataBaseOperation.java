@@ -134,10 +134,11 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
     @Override
     public int delete(Module module) {
         String sql = "DELETE FROM Modules WHERE id = ?";
+        String sql2 = "UPDATE  Etudiant set moduleId = NULL";
 
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
              PreparedStatement stmt = con.prepareStatement(sql)) {
-
+                con.prepareStatement(sql2).executeUpdate();
             stmt.setInt(1, module.getId());
             return stmt.executeUpdate();
         } catch (Exception e) {

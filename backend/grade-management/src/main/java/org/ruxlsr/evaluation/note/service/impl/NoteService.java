@@ -1,8 +1,8 @@
-package org.ruxlsr.evaluation.services.impl;
+package org.ruxlsr.evaluation.note.service.impl;
 
 import org.ruxlsr.dataaccess.services.DataBaseOperation;
-import org.ruxlsr.evaluation.model.Note;
-import org.ruxlsr.evaluation.services.INotesService;
+import org.ruxlsr.evaluation.note.model.Note;
+import org.ruxlsr.evaluation.note.service.INotesService;
 
 import java.util.Set;
 

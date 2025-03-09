@@ -1,8 +1,8 @@
-package org.ruxlsr.evaluation.services;
+package org.ruxlsr.evaluation.note.service;
+
+import org.ruxlsr.evaluation.note.model.Note;
 
 import java.util.Set;
-
-import org.ruxlsr.evaluation.model.Note;
 
 public interface INotesService {
     public int createNote(Note note);
