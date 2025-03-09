@@ -104,9 +104,13 @@ public class Main {
         });
 
         delete("/etudiants", (req, res) -> {
-            Etudiant etudiant = gson.fromJson(req.body(), Etudiant.class);
+            JsonObject body = JsonParser.parseString(req.body()).getAsJsonObject();
+            Integer idEtudianttoDelete = body.get("id").getAsInt();
+
+            Etudiant etudiant = new Etudiant(idEtudianttoDelete, null, null, null, null);
             etudiantService.supprimerEtudiant(etudiant);
             res.type("application/json");
+            System.out.println("Req for deletion for Etudiant: #"+idEtudianttoDelete);
             return gson.toJson(new Response("Etudiant deleted", 1)); // Assuming success
         });
 

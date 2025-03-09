@@ -62,11 +62,19 @@ const Students = () => {
   };
 
   const handleImport = (data) => {
-    data.forEach((row) => {
-      const [nom, prenom, matricule, moduleNom] = row;
+    // Ignorer la première ligne (en-têtes)
+    const rows = data.slice(1);
+
+    rows.forEach((row) => {
+      const [matricule, nom, prenom, moduleNom] = row;
       const module = modules.find((mod) => mod.nom === moduleNom);
       if (module) {
-        const newStudent = { nom, prenom, matricule, moduleId: module.id };
+        const newStudent = {
+          nom,
+          prenom,
+          matricule,
+          moduleId: module.id,
+        };
 
         fetch("http://127.0.0.1:8000/etudiants", {
           method: "POST",
@@ -84,9 +92,37 @@ const Students = () => {
           .catch((error) => console.error("Error adding student:", error));
       }
     });
+
     setIsSuccess(true);
-    setModalMessage("Étudiants importés avec succès !");
+    setModalMessage("Import terminé");
     setShowModal(true);
+  };
+
+  const handleDeleteStudent = (studentId) => {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer cet étudiant ?")) {
+      fetch("http://127.0.0.1:8000/etudiants", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ id: studentId }),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.rowsAffected > 0) {
+            setStudents(students.filter((student) => student.id !== studentId));
+            setIsSuccess(true);
+            setModalMessage("Étudiant supprimé avec succès !");
+            setShowModal(true);
+          }
+        })
+        .catch((error) => {
+          console.error("Error deleting student:", error);
+          setIsSuccess(false);
+          setModalMessage("Erreur lors de la suppression de l'étudiant.");
+          setShowModal(true);
+        });
+    }
   };
 
   return (
@@ -169,23 +205,54 @@ const Students = () => {
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <h1 className="card-title text-2xl font-bold">Liste des Étudiants</h1>
-          <ul className="space-y-4 mt-4">
-            {students.map((student, index) => (
-              <li key={index} className="border p-4 rounded-lg">
-                <h2 className="text-xl font-bold">
-                  {student.nom} {student.prenom}
-                </h2>
-                <p>Matricule: {student.matricule}</p>
-                <p>
-                  Module:{" "}
-                  {
-                    modules.find((module) => module.id === student.moduleId)
-                      ?.nom
-                  }
-                </p>
-              </li>
-            ))}
-          </ul>
+          <div className="overflow-x-auto">
+            <table className="table w-full">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Prénom</th>
+                  <th>Matricule</th>
+                  <th>Module</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {students.map((student) => (
+                  <tr key={student.id}>
+                    <td className="font-semibold">{student.nom}</td>
+                    <td>{student.prenom}</td>
+                    <td>{student.matricule}</td>
+                    <td>
+                      {modules.find((module) => module.id === student.moduleId)
+                        ?.nom || "N/A"}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteStudent(student.id)}
+                        className="btn btn-error btn-sm"
+                        title="Supprimer"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth={1.5}
+                          stroke="currentColor"
+                          className="w-5 h-5"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
+                        </svg>
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
       {showModal && (

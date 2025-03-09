@@ -50,8 +50,8 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
                 
                 FROM Modules m
                 LEFT JOIN Evaluation e ON m.id = e.moduleId
-                LEFT JOIN Note n ON e.id = n.evaluationId
-                LEFT JOIN Etudiant etu ON n.etudiantId = etu.id
+                LEFT JOIN Etudiant etu ON m.id = etu.moduleId
+                LEFT JOIN Note n ON etu.id = n.etudiantId AND e.id = n.evaluationId
                 """;
 
         try (Connection con = MysqlDbConnection.getInstance().getConnection();
@@ -97,7 +97,7 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
                             rs.getString("etudiantNom"),
                             rs.getString("etudiantPrenom"),
                             rs.getString("etudiantMatricule"),
-                            rs.getInt("ModuleId")
+                            moduleId
                     );
                     module.getEtudiantSet().add(etudiant);
                 }
@@ -107,9 +107,8 @@ public class ModuleDataBaseOperation implements DataBaseOperation<Module> {
 
         } catch (Exception e) {
             LOGGER.log(Level.SEVERE, "Récupération des modules échouée : " + e.getLocalizedMessage(), e);
+            return Set.of(); // Important: Return an empty set in case of error
         }
-
-        return Set.of();
     }
 
     @Override
