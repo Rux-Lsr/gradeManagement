@@ -171,11 +171,15 @@ public class Main {
         post("/notes", (req, res) -> {
             Note note = gson.fromJson(req.body(), Note.class);
             int rowsAffected = notesService.createNote(note);
+            System.out.println("Req to update note: #"+rowsAffected);
             res.type("application/json");
-            if(rowsAffected > 0)
+            if(rowsAffected > 0) {
+                System.out.println("Req success to update note: #"+rowsAffected);
                 return gson.toJson(new Response("Note created", rowsAffected));
-            else
+            }else {
+                System.err.println("Req failed to update note: #"+rowsAffected);
                 return gson.toJson(new Response("Note not created", rowsAffected));
+            }
         });
 
         get("/notes", (req, res) -> {
@@ -186,6 +190,7 @@ public class Main {
         put("/notes", (req, res) -> {
             Note note = gson.fromJson(req.body(), Note.class);
             int rowsAffected = notesService.update(note);
+            System.out.println("Req to update note: #"+rowsAffected);
             res.type("application/json");
             return gson.toJson(new Response("Note updated", rowsAffected));
         });
